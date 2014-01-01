@@ -11,5 +11,6 @@ namespace DapperTesting.Core.Model
         public DateTime PostedDate { get; set; }
         public DateTime EditedDate { get; set; }
         public bool Deleted { get; set; }
+        public int DetailsCount { get; set; }
     }
 }
