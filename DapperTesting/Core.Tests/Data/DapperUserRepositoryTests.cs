@@ -15,7 +15,6 @@ namespace DapperTesting.Core.Tests.Data
     public class DapperUserRepositoryTests : TestBase
     {
         private DapperUserRepositoryTestContext _c;
-        private static readonly object _userLock = new object();
 
         [TestMethod]
         public void When_a_new_user_is_created_the_data_is_inserted()
@@ -83,7 +82,6 @@ namespace DapperTesting.Core.Tests.Data
         public void Init()
         {
             Start();
-            Monitor.Enter(_userLock);
             _c = new DapperUserRepositoryTestContext();
         }
 
@@ -94,7 +92,6 @@ namespace DapperTesting.Core.Tests.Data
             {
                 _c.Dispose();
             }
-            Monitor.Exit(_userLock);
             End();
         }
 
