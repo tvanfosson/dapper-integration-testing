@@ -20,7 +20,7 @@ namespace DapperTesting.Core.Tests.Data
         [TestMethod]
         public void When_a_new_user_is_created_the_data_is_inserted()
         {
-            var respository = _c.GetRepository();
+            var repository = _c.GetRepository();
             var user = new User
             {
                 DisplayName = "UserName",
@@ -28,9 +28,9 @@ namespace DapperTesting.Core.Tests.Data
                 Active = true
             };
 
-            respository.Create(user);
+            repository.Create(user);
 
-            var retrievedUser = respository.Get(user.Id);
+            var retrievedUser = repository.Get(user.Id);
 
             Assert.AreEqual(user.DisplayName, retrievedUser.DisplayName);
             Assert.AreEqual(user.Email, retrievedUser.Email);
@@ -40,7 +40,7 @@ namespace DapperTesting.Core.Tests.Data
         [TestMethod]
         public void When_a_new_user_is_created_the_current_time_is_set_as_the_created_date()
         {
-            var respository = _c.GetRepository();
+            var repository = _c.GetRepository();
             var user = new User
             {
                 DisplayName = "UserName",
@@ -49,10 +49,10 @@ namespace DapperTesting.Core.Tests.Data
             };
 
             var before = _c.RoundToSecond(DateTime.Now);
-            respository.Create(user);
+            repository.Create(user);
             var after = _c.RoundToSecond(DateTime.Now);
 
-            var retrievedUser = respository.Get(user.Id);
+            var retrievedUser = repository.Get(user.Id);
 
             var created = _c.RoundToSecond(retrievedUser.CreatedDate);
 
