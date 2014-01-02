@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-
 using DapperTesting.Core.Data;
 using DapperTesting.Core.Model;
-
 using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
