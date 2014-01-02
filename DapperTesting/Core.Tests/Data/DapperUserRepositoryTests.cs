@@ -34,6 +34,29 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(user.Active, retrievedUser.Active);
         }
 
+        [TestMethod]
+        public void When_a_new_user_is_created_the_current_time_is_set_as_the_created_date()
+        {
+            var respository = _c.GetRepository();
+            var user = new User
+            {
+                DisplayName = "UserName",
+                Email = "username@example.com",
+                Active = true
+            };
+
+            var before = _c.RoundToSecond(DateTime.Now);
+            respository.Create(user);
+            var after = _c.RoundToSecond(DateTime.Now);
+
+            var retrievedUser = respository.Get(user.Id);
+
+            var created = _c.RoundToSecond(retrievedUser.CreatedDate);
+
+            // we only care about the nearest second
+            Assert.IsTrue(before <= created && created <= after);
+        }
+
         [TestInitialize]
         public void Init()
         {
@@ -62,6 +85,11 @@ namespace DapperTesting.Core.Tests.Data
                 A.CallTo(() => connectionFactory.Create(_connectionString)).ReturnsLazily(f => GetConnection());
 
                 return new DapperUserRepository(connectionFactory, _connectionString);
+            }
+
+            public DateTime RoundToSecond(DateTime input)
+            {
+                return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
             }
         }
     }
