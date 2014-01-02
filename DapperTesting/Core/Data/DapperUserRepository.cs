@@ -52,7 +52,9 @@ namespace DapperTesting.Core.Data
 
         public List<User> GetAll()
         {
-            throw new NotImplementedException();
+            const string sql = "SELECT * FROM [Users]";
+            var users = Fetch(c => c.Query<User>(sql));
+            return users.ToList();
         }
 
         public void Update(User user)
