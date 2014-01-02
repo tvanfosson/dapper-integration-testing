@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AppConfigWrapper.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
+    <Compile Include="Data\DapperUserRepository.cs" />
     <Compile Include="Data\IPostRepository.cs" />
     <Compile Include="Data\IUserRepository.cs" />
     <Compile Include="Data\MsSqlConnectionFactory.cs" />
