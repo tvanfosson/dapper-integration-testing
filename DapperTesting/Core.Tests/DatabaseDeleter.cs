@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 
 namespace DapperTesting.Core.Tests
 {
@@ -19,11 +20,11 @@ namespace DapperTesting.Core.Tests
             public string ForeignKeyTable { get; set; }
         }
 
+        private static readonly object _lockObj = new object();
+        private static readonly string[] _ignoredTables = { "sysdiagrams" };
         private readonly string _database;
-        private static readonly string[] IgnoredTables = { "sysdiagrams" };
         private IEnumerable<string> _tablesToDelete;
-        private string _deleteSql;
-        private readonly static object _lockObj = new object();
+        private static string _deleteSql;
         private static bool _initialized;
 
         public DatabaseDeleter(string database)
@@ -89,7 +90,7 @@ namespace DapperTesting.Core.Tests
 
         private static string BuildTableSql(IEnumerable<string> tablesToDelete)
         {
-            return string.Join("; ", tablesToDelete.Select(t => string.Format("delete from [{0}]", t)));
+            return string.Join(" ", tablesToDelete.Select(t => string.Format("delete from [{0}];", t)));
         }
 
         private static IEnumerable<string> BuildTableList(ICollection<string> allTables, ICollection<Relationship> allRelationships)
@@ -163,7 +164,7 @@ namespace DapperTesting.Core.Tests
                     }
                 }
 
-                return tables.Except(IgnoredTables).ToList();
+                return tables.Except(_ignoredTables).ToList();
             }
         }
     }
