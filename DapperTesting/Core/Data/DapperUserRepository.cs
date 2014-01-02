@@ -18,7 +18,7 @@ namespace DapperTesting.Core.Data
         {
             var date = DateTime.Now;
 
-            const string sql = "INSERT INTO [User] ([DisplayName], [Email], [CreatedDate], [Active]) OUTPUT inserted.[Id] VALUES (@displayName, @email, @createdDate, @active)";
+            const string sql = "INSERT INTO [Users] ([DisplayName], [Email], [CreatedDate], [Active]) OUTPUT inserted.[Id] VALUES (@displayName, @email, @createdDate, @active)";
 
             var id = Fetch(c => c.Query<int>(sql, new
             {
@@ -34,13 +34,13 @@ namespace DapperTesting.Core.Data
 
         public void Delete(int id)
         {
-            const string sql = "DELETE FROM [User] WHERE [Id] = @userId";
+            const string sql = "DELETE FROM [Users] WHERE [Id] = @userId";
             Execute(c => c.Execute(sql, new { userId = id }));
         }
 
         public User Get(int id)
         {
-            const string sql = "SELECT * FROM [User] WHERE [Id] = @userId";
+            const string sql = "SELECT * FROM [Users] WHERE [Id] = @userId";
             var user = Fetch(c => c.Query<User>(sql, new { userId = id }).SingleOrDefault());
             return user;
         }
