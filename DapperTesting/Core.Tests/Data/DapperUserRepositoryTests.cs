@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+
 using DapperTesting.Core.Data;
 using DapperTesting.Core.Model;
 
@@ -13,6 +15,7 @@ namespace DapperTesting.Core.Tests.Data
     public class DapperUserRepositoryTests : TestBase
     {
         private DapperUserRepositoryTestContext _c;
+        private static readonly object _userLock = new object();
 
         [TestMethod]
         public void When_a_new_user_is_created_the_data_is_inserted()
@@ -57,10 +60,35 @@ namespace DapperTesting.Core.Tests.Data
             Assert.IsTrue(before <= created && created <= after);
         }
 
+        [TestMethod]
+        public void When_a_user_is_deleted_get_returns_null()
+        {
+            var repository = _c.GetRepository();
+
+            var all = repository.GetAll();
+
+            Assert.AreEqual(0, all.Count);
+
+            var user = new User
+            {
+                DisplayName = "UserName",
+                Email = "username@example.com",
+                Active = true
+            };
+
+            repository.Create(user);
+            repository.Delete(user.Id);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.IsNull(retrievedUser);
+        }
+
         [TestInitialize]
         public void Init()
         {
             Start();
+            Monitor.Enter(_userLock);
             _c = new DapperUserRepositoryTestContext();
         }
 
@@ -71,6 +99,7 @@ namespace DapperTesting.Core.Tests.Data
             {
                 _c.Dispose();
             }
+            Monitor.Exit(_userLock);
             End();
         }
 
