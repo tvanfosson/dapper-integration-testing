@@ -64,6 +64,21 @@ namespace DapperTesting.Core.Tests.Data
             Assert.IsNull(retrievedUser);
         }
 
+        [TestMethod]
+        public void When_all_users_are_retrieved_the_count_is_correct()
+        {
+            var repository = _c.GetRepository();
+            const int userCount = 10;
+            for (var i = 0; i < userCount; ++i)
+            {
+                repository.Create(_c.CreateStandardUser(i));
+            }
+
+            var users = repository.GetAll();
+
+            Assert.AreEqual(userCount, users.Count);
+        }
+
         [TestInitialize]
         public void Init()
         {
@@ -101,12 +116,12 @@ namespace DapperTesting.Core.Tests.Data
                 return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
             }
 
-            public User CreateStandardUser()
+            public User CreateStandardUser(int id = 0)
             {
                 return new User
                 {
-                    DisplayName = "UserName",
-                    Email = "username@example.com",
+                    DisplayName = "UserName" + id,
+                    Email = string.Format("username{0}@example.com", id),
                     Active = true
                 };
             }
