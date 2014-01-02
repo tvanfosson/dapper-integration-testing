@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using Dapper;
 using DapperTesting.Core.Model;
 
@@ -14,13 +16,20 @@ namespace DapperTesting.Core.Data
 
         public void Create(User user)
         {
-            const string sql = "INSERT INTO [User] ([DisplayName], [Email], [CreatedDate], [Active]) VALUES (@displayName, @email, GETDATE(), @active)";
-            Execute(c => c.Execute(sql, new
+            var date = DateTime.Now;
+
+            const string sql = "INSERT INTO [User] ([DisplayName], [Email], [CreatedDate], [Active]) OUTPUT inserted.[Id] VALUES (@displayName, @email, @createdDate, @active)";
+
+            var id = Fetch(c => c.Query<int>(sql, new
             {
                 displayName = user.DisplayName,
                 email = user.Email,
+                createdDate = date,
                 active = user.Active
-            }));
+            }).Single());
+
+            user.Id = id;
+            user.CreatedDate = date;
         }
 
         public void Delete(int id)
@@ -31,7 +40,9 @@ namespace DapperTesting.Core.Data
 
         public User Get(int id)
         {
-            throw new NotImplementedException();
+            const string sql = "SELECT * FROM [User] WHERE [Id] = @userId";
+            var user = Fetch(c => c.Query<User>(sql, new { userId = id }).SingleOrDefault());
+            return user;
         }
 
         public User Get(string email)
