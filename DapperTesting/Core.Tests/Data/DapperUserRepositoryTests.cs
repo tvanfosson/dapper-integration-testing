@@ -21,12 +21,7 @@ namespace DapperTesting.Core.Tests.Data
         public void When_a_new_user_is_created_the_data_is_inserted()
         {
             var repository = _c.GetRepository();
-            var user = new User
-            {
-                DisplayName = "UserName",
-                Email = "username@example.com",
-                Active = true
-            };
+            var user = _c.CreateStandardUser();
 
             repository.Create(user);
 
@@ -41,12 +36,7 @@ namespace DapperTesting.Core.Tests.Data
         public void When_a_new_user_is_created_the_current_time_is_set_as_the_created_date()
         {
             var repository = _c.GetRepository();
-            var user = new User
-            {
-                DisplayName = "UserName",
-                Email = "username@example.com",
-                Active = true
-            };
+            var user = _c.CreateStandardUser();
 
             var before = _c.RoundToSecond(DateTime.Now);
             repository.Create(user);
@@ -64,17 +54,7 @@ namespace DapperTesting.Core.Tests.Data
         public void When_a_user_is_deleted_get_returns_null()
         {
             var repository = _c.GetRepository();
-
-            var all = repository.GetAll();
-
-            Assert.AreEqual(0, all.Count);
-
-            var user = new User
-            {
-                DisplayName = "UserName",
-                Email = "username@example.com",
-                Active = true
-            };
+            var user = _c.CreateStandardUser();
 
             repository.Create(user);
             repository.Delete(user.Id);
@@ -119,6 +99,16 @@ namespace DapperTesting.Core.Tests.Data
             public DateTime RoundToSecond(DateTime input)
             {
                 return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
+            }
+
+            public User CreateStandardUser()
+            {
+                return new User
+                {
+                    DisplayName = "UserName",
+                    Email = "username@example.com",
+                    Active = true
+                };
             }
         }
     }
