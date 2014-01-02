@@ -7,7 +7,9 @@ using System.Linq;
 namespace DapperTesting.Core.Tests
 {
     /// <summary>
-    /// Based on https://gist.github.com/jbogard/5805783 for nHibernate, adapted to use SqlConnection/SqlCommand
+    /// Based on https://gist.github.com/jbogard/5805783 for nHibernate, adapted to use SqlConnection/SqlCommand.
+    /// Queries the database and builds a set of delete commands that takes into account the relations
+    /// between tables to clean all the data out after a test run.
     /// </summary>
     internal class DatabaseDeleter
     {
