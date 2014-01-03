@@ -14,7 +14,7 @@ namespace DapperTesting.Core.Tests
         private readonly static string[] _createScripts = { "000-Create-DapperTesting.sql" };
         private static readonly string[] _deleteScripts = { "000-Drop-DapperTesting.sql" };
         private readonly static string _dbFile = Path.Combine(Environment.CurrentDirectory, "DapperTestingDB.mdf");
-        private static readonly string _connectionString = @"Data Source=(LocalDB)\v11.0;Integrated Security=True;AttachDbFilename=" + _dbFile;
+        private static readonly string _connectionString = @"Data Source=(LocalDB)\v11.0;Initial Catalog=DapperTesting;Integrated Security=True;AttachDbFilename=" + _dbFile;
         private static readonly Func<string, bool> _startsBatch = s => s.StartsWith("GO", StringComparison.OrdinalIgnoreCase);
         private static readonly Func<string, bool> _isUse = s => s.StartsWith("USE", StringComparison.OrdinalIgnoreCase);
         private static readonly Func<string, bool> _isSet = s => s.StartsWith("SET", StringComparison.OrdinalIgnoreCase);
