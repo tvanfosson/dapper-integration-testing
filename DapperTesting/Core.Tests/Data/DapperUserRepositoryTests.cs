@@ -196,6 +196,20 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(userCount, users.Count);
         }
 
+        [TestMethod]
+        public void When_a_nonexistent_user_is_updated_the_return_value_is_false()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+
+            repository.Create(user);
+
+            var success = repository.Update(otherUser);
+
+            Assert.IsFalse(success);
+        }
+
         [TestInitialize]
         public void Init()
         {

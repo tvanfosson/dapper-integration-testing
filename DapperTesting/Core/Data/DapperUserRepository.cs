@@ -62,7 +62,7 @@ namespace DapperTesting.Core.Data
 
         public bool Update(User user)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }
