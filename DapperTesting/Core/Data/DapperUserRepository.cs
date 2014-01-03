@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-
 using Dapper;
 using DapperTesting.Core.Model;
 
@@ -36,28 +35,36 @@ namespace DapperTesting.Core.Data
         public bool Delete(int id)
         {
             const string sql = "DELETE FROM [Users] WHERE [Id] = @userId";
+
             var deleted = Execute(c => c.Execute(sql, new { userId = id }));
+
             return deleted == 1;
         }
 
         public User Get(int id)
         {
             const string sql = "SELECT * FROM [Users] WHERE [Id] = @userId";
+
             var user = Fetch(c => c.Query<User>(sql, new { userId = id }).SingleOrDefault());
+
             return user;
         }
 
         public User Get(string email)
         {
             const string sql = "SELECT * FROM [Users] WHERE [Email] = @email";
+
             var user = Fetch(c => c.Query<User>(sql, new { email })).SingleOrDefault();
+
             return user;
         }
 
         public List<User> GetAll()
         {
             const string sql = "SELECT * FROM [Users]";
+
             var users = Fetch(c => c.Query<User>(sql));
+
             return users.ToList();
         }
 
@@ -66,6 +73,7 @@ namespace DapperTesting.Core.Data
             try
             {
                 const string sql = "UPDATE [Users] SET [DisplayName] = @displayName, [Email] = @email, [Active] = @active WHERE [Id] = @userId";
+
                 var updated = Execute(c => c.Execute(sql, new
                 {
                     userId = user.Id,
@@ -73,6 +81,7 @@ namespace DapperTesting.Core.Data
                     email = user.Email,
                     active = user.Active
                 }));
+
                 return updated == 1;
             }
             catch (SqlException)
