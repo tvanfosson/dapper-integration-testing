@@ -50,7 +50,7 @@ namespace DapperTesting.Core.Tests.Data
 
             repository.Create(user);
 
-            var retrievedUser = repository.Get("username1@example.com");
+            var retrievedUser = repository.Get(_c.CreateEmail(1));
 
             Assert.IsNull(retrievedUser);
         }
@@ -191,15 +191,16 @@ namespace DapperTesting.Core.Tests.Data
 
         private class DapperUserRepositoryTestContext : TestContextBase
         {
-            private const string _connectionString = "UserConnectionString";
+            private const string ConnectionStringName = "UserConnectionString";
+            private const string EmailFormat = "username{0}@example.com";
 
             public IUserRepository GetRepository()
             {
                 var connectionFactory = A.Fake<IConnectionFactory>();
 
-                A.CallTo(() => connectionFactory.Create(_connectionString)).ReturnsLazily(f => GetConnection());
+                A.CallTo(() => connectionFactory.Create(ConnectionStringName)).ReturnsLazily(f => GetConnection());
 
-                return new DapperUserRepository(connectionFactory, _connectionString);
+                return new DapperUserRepository(connectionFactory, ConnectionStringName);
             }
 
             public DateTime RoundToSecond(DateTime input)
@@ -212,9 +213,14 @@ namespace DapperTesting.Core.Tests.Data
                 return new User
                 {
                     DisplayName = "UserName" + id,
-                    Email = string.Format("username{0}@example.com", id),
+                    Email = CreateEmail(id),
                     Active = true
                 };
+            }
+
+            public string CreateEmail(int id)
+            {
+                return string.Format(EmailFormat, id);
             }
         }
     }
