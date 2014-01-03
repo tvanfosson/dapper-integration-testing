@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using DapperTesting.Core.Data;
 using DapperTesting.Core.Model;
@@ -82,6 +83,20 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(user.DisplayName, retrievedUser.DisplayName);
             Assert.AreEqual(user.Email, retrievedUser.Email);
             Assert.AreEqual(user.Active, retrievedUser.Active);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SqlException))]
+        public void When_a_user_with_a_conflicting_email_address_is_created_an_exception_is_thrown()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+            otherUser.Email = user.Email;
+
+            repository.Create(user);
+
+            repository.Create(otherUser);
         }
 
         [TestMethod]
