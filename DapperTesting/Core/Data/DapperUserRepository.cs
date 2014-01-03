@@ -47,7 +47,9 @@ namespace DapperTesting.Core.Data
 
         public User Get(string email)
         {
-            throw new NotImplementedException();
+            const string sql = "SELECT * FROM [Users] WHERE [Email] = @email";
+            var user = Fetch(c => c.Query<User>(sql, new { email })).SingleOrDefault();
+            return user;
         }
 
         public List<User> GetAll()

@@ -26,6 +26,20 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(user.Id, retrievedUser.Id);
         }
 
+
+        [TestMethod]
+        public void When_a_new_user_is_retrieved_by_email_it_is_the_correct_user()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+
+            var retrievedUser = repository.Get(user.Email);
+
+            Assert.AreEqual(user.Id, retrievedUser.Id);
+        }
+
         [TestMethod]
         public void When_a_new_user_is_created_the_data_is_inserted()
         {
