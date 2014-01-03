@@ -7,12 +7,12 @@ namespace DapperTesting.Core.Data
     {
         void Create(Post post);
         void AddDetails(int postId, PostDetails details);
-        void Delete(int postId);
-        void DeleteDetails(int detailsId);
+        bool Delete(int postId);
+        bool DeleteDetails(int detailsId);
         List<Post> GetPostsForUser(int userId);
         Post Get(int id);
         PostDetails GetDetails(int postId, int sequence);
-        void Update(Post post);
-        void UpdateDetails(PostDetails details);
+        bool Update(Post post);
+        bool UpdateDetails(PostDetails details);
     }
 }

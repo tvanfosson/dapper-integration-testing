@@ -35,32 +35,34 @@ namespace DapperTesting.Core.Data
             }
         }
 
-        protected void Execute(Action<DbConnection> action)
+        protected int Execute(Func<DbConnection, int> func)
         {
-            if (action == null)
+            if (func == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException("func");
             }
 
             using (var connection = OpenConnection())
             {
-                action(connection);
+                return func(connection);
             }
         }
 
-        protected void ExecuteTransaction(Action<DbConnection, IDbTransaction> action, IsolationLevel isolationLevel = IsolationLevel.Serializable)
+        protected int ExecuteTransaction(Func<DbConnection, IDbTransaction, int> func, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
-            if (action == null)
+            if (func == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("func");
             }
 
             using (var connection = OpenConnection())
             using (var transaction = connection.BeginTransaction(isolationLevel))
             {
-                action(connection, transaction);
+                var value = func(connection, transaction);
 
                 transaction.Commit();
+
+                return value;
             }
         }
     }

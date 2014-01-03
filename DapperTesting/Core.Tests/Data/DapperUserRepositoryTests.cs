@@ -144,6 +144,30 @@ namespace DapperTesting.Core.Tests.Data
         }
 
         [TestMethod]
+        public void When_an_existing_user_is_deleted_the_return_value_is_true()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+            var success = repository.Delete(user.Id);
+
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
+        public void When_a_nonexistent_user_is_deleted_the_return_value_is_false()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+            var success = repository.Delete(1);
+
+            Assert.IsFalse(success);
+        }
+
+        [TestMethod]
         public void When_a_user_is_deleted_get_returns_null()
         {
             var repository = _c.GetRepository();

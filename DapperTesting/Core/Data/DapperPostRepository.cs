@@ -20,12 +20,12 @@ namespace DapperTesting.Core.Data
             throw new NotImplementedException();
         }
 
-        public void Delete(int postId)
+        public bool Delete(int postId)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteDetails(int detailsId)
+        public bool DeleteDetails(int detailsId)
         {
             throw new NotImplementedException();
         }
@@ -45,12 +45,12 @@ namespace DapperTesting.Core.Data
             throw new NotImplementedException();
         }
 
-        public void Update(Post post)
+        public bool Update(Post post)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateDetails(PostDetails details)
+        public bool UpdateDetails(PostDetails details)
         {
             throw new NotImplementedException();
         }

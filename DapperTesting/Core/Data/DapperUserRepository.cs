@@ -32,10 +32,11 @@ namespace DapperTesting.Core.Data
             user.CreatedDate = date;
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
             const string sql = "DELETE FROM [Users] WHERE [Id] = @userId";
-            Execute(c => c.Execute(sql, new { userId = id }));
+            var deleted = Execute(c => c.Execute(sql, new { userId = id }));
+            return deleted == 1;
         }
 
         public User Get(int id)
@@ -59,7 +60,7 @@ namespace DapperTesting.Core.Data
             return users.ToList();
         }
 
-        public void Update(User user)
+        public bool Update(User user)
         {
             throw new NotImplementedException();
         }
