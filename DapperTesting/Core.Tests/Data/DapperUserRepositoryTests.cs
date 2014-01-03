@@ -320,6 +320,25 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(oldEmail, retrievedUser.Email);
         }
 
+        [TestMethod]
+        public void When_a_user_with_a_new_created_date_is_updated_the_value_returned_is_true_and_the_user_is_not_updated()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+
+            var oldDate = _c.RoundToSecond(user.CreatedDate);
+            user.CreatedDate = DateTime.Now.AddDays(-1);
+
+            var success = repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.IsTrue(success);
+            Assert.AreEqual(oldDate, _c.RoundToSecond(retrievedUser.CreatedDate));
+        }
+
         [TestInitialize]
         public void Init()
         {
