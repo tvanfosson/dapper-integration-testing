@@ -62,7 +62,14 @@ namespace DapperTesting.Core.Data
 
         public bool Update(User user)
         {
-            return false;
+            const string sql = "UPDATE [Users] SET [DisplayName] = @displayName, [Email] = @email WHERE [Id] = @userId";
+            var updated = Execute(c => c.Execute(sql, new
+            {
+                userId = user.Id,
+                displayName = user.DisplayName,
+                email = user.Email
+            }));
+            return updated == 1;
         }
     }
 }

@@ -197,6 +197,19 @@ namespace DapperTesting.Core.Tests.Data
         }
 
         [TestMethod]
+        public void When_an_existing_user_is_updated_the_return_value_is_true()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+
+            var success = repository.Update(user);
+
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod]
         public void When_a_nonexistent_user_is_updated_the_return_value_is_false()
         {
             var repository = _c.GetRepository();
@@ -208,6 +221,42 @@ namespace DapperTesting.Core.Tests.Data
             var success = repository.Update(otherUser);
 
             Assert.IsFalse(success);
+        }
+
+        [TestMethod]
+        public void When_the_display_name_is_updated_the_new_value_has_been_persisted()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var newName = user.DisplayName + "new";
+
+            repository.Create(user);
+
+            user.DisplayName = newName;
+
+            repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.AreEqual(newName, retrievedUser.DisplayName);
+        }
+
+        [TestMethod]
+        public void When_the_email_is_updated_the_new_value_has_been_persisted()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var newEmail = _c.CreateEmail(1);
+
+            repository.Create(user);
+
+            user.Email = newEmail;
+
+            repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.AreEqual(newEmail, retrievedUser.Email);
         }
 
         [TestInitialize]
