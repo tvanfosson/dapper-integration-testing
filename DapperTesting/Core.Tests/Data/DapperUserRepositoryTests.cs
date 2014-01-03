@@ -100,6 +100,20 @@ namespace DapperTesting.Core.Tests.Data
         }
 
         [TestMethod]
+        [ExpectedException(typeof(SqlException))]
+        public void When_a_user_with_a_conflicting_displayname_is_created_an_exception_is_thrown()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+            otherUser.DisplayName = user.DisplayName;
+
+            repository.Create(user);
+
+            repository.Create(otherUser);
+        }
+
+        [TestMethod]
         public void When_a_new_user_is_created_the_id_is_updated()
         {
             var repository = _c.GetRepository();
