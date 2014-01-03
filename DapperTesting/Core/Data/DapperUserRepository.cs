@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 
 using Dapper;
@@ -62,15 +63,22 @@ namespace DapperTesting.Core.Data
 
         public bool Update(User user)
         {
-            const string sql = "UPDATE [Users] SET [DisplayName] = @displayName, [Email] = @email, [Active] = @active WHERE [Id] = @userId";
-            var updated = Execute(c => c.Execute(sql, new
+            try
             {
-                userId = user.Id,
-                displayName = user.DisplayName,
-                email = user.Email,
-                active = user.Active
-            }));
-            return updated == 1;
+                const string sql = "UPDATE [Users] SET [DisplayName] = @displayName, [Email] = @email, [Active] = @active WHERE [Id] = @userId";
+                var updated = Execute(c => c.Execute(sql, new
+                {
+                    userId = user.Id,
+                    displayName = user.DisplayName,
+                    email = user.Email,
+                    active = user.Active
+                }));
+                return updated == 1;
+            }
+            catch (SqlException)
+            {
+                return false;
+            }
         }
     }
 }

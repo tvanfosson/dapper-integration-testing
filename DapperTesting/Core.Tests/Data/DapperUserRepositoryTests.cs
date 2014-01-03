@@ -276,6 +276,50 @@ namespace DapperTesting.Core.Tests.Data
             Assert.IsFalse(retrievedUser.Active);
         }
 
+        [TestMethod]
+        public void When_a_user_is_updated_with_an_existing_email_the_value_returned_is_false_and_the_user_is_not_updated()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+
+            repository.Create(user);
+            repository.Create(otherUser);
+
+            var oldName = user.DisplayName;
+            user.Email = otherUser.Email;
+            user.DisplayName = user.DisplayName + "-new";
+
+            var success = repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.IsFalse(success);
+            Assert.AreEqual(oldName, retrievedUser.DisplayName);
+        }
+
+        [TestMethod]
+        public void When_a_user_is_updated_with_an_existing_displayname_the_value_returned_is_false_and_the_user_is_not_updated()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+
+            repository.Create(user);
+            repository.Create(otherUser);
+
+            var oldEmail = user.Email;
+            user.Email = _c.CreateEmail(2);
+            user.DisplayName = otherUser.DisplayName;
+
+            var success = repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.IsFalse(success);
+            Assert.AreEqual(oldEmail, retrievedUser.Email);
+        }
+
         [TestInitialize]
         public void Init()
         {
