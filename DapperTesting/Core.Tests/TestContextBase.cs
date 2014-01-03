@@ -4,6 +4,12 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.IO;
+
+using DapperTesting.Core.Data;
+using DapperTesting.Core.Model;
+
+using FakeItEasy;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DapperTesting.Core.Tests
@@ -11,6 +17,7 @@ namespace DapperTesting.Core.Tests
     internal abstract class TestContextBase : IDisposable
     {
         private const string ScriptsDirectory = @"..\..\..\..\DatabaseScripts\";
+        private const string EmailFormat = "username{0}@example.com";
         private readonly static string[] _createScripts = { "000-Create-DapperTesting.sql" };
         private static readonly string[] _deleteScripts = { "000-Drop-DapperTesting.sql" };
         private readonly static string _dbFile = Path.Combine(Environment.CurrentDirectory, "DapperTestingDB.mdf");
@@ -92,6 +99,35 @@ namespace DapperTesting.Core.Tests
             return new SqlConnection(_connectionString);
         }
 
+        protected static IConnectionFactory CreateConnectionFactory(string connectionStringName)
+        {
+            var connectionFactory = A.Fake<IConnectionFactory>();
+
+            A.CallTo(() => connectionFactory.Create(connectionStringName)).ReturnsLazily(f => GetConnection());
+
+            return connectionFactory;
+        }
+
+        public DateTime RoundToSecond(DateTime input)
+        {
+            return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
+        }
+
+        public User CreateStandardUser(int id = 0)
+        {
+            return new User
+            {
+                DisplayName = "UserName" + id,
+                Email = CreateEmail(id),
+                Active = true
+            };
+        }
+
+        public string CreateEmail(int id)
+        {
+            return string.Format(EmailFormat, id);
+        }
+
         // IDisposable implementation. On dispose of the context, we clean up any data inserted by the test
         
         protected bool _disposed;
@@ -121,11 +157,6 @@ namespace DapperTesting.Core.Tests
             }
 
             _disposed = true;
-        }
-
-        public DateTime RoundToSecond(DateTime input)
-        {
-            return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
         }
     }
 }

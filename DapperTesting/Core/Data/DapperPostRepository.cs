@@ -16,7 +16,16 @@ namespace DapperTesting.Core.Data
 
         public void Create(Post post)
         {
-            throw new NotImplementedException();
+            const string sql = "INSERT INTO [Posts] ([OwnerId], [Title], [Slug], [PostedDate], [EditedDate], [Deleted]) OUTPUT inserted.[Id] VALUES(@ownerId, @title, @slug, GETDATE(), GETDATE(), 0)";
+
+            var id = Fetch(c => c.Query<int>(sql, new
+            {
+                ownerId = post.OwnerId,
+                title = post.Title,
+                slug = post.Slug
+            })).Single();
+
+            post.Id = id;
         }
 
         public void AddDetails(int postId, PostDetails details)

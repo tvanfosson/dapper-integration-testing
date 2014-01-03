@@ -359,30 +359,12 @@ namespace DapperTesting.Core.Tests.Data
         private class DapperUserRepositoryTestContext : TestContextBase
         {
             private const string ConnectionStringName = "UserConnectionString";
-            private const string EmailFormat = "username{0}@example.com";
 
             public IUserRepository GetRepository()
             {
-                var connectionFactory = A.Fake<IConnectionFactory>();
-
-                A.CallTo(() => connectionFactory.Create(ConnectionStringName)).ReturnsLazily(f => GetConnection());
+                var connectionFactory = CreateConnectionFactory(ConnectionStringName);
 
                 return new DapperUserRepository(connectionFactory, ConnectionStringName);
-            }
-
-            public User CreateStandardUser(int id = 0)
-            {
-                return new User
-                {
-                    DisplayName = "UserName" + id,
-                    Email = CreateEmail(id),
-                    Active = true
-                };
-            }
-
-            public string CreateEmail(int id)
-            {
-                return string.Format(EmailFormat, id);
             }
         }
     }

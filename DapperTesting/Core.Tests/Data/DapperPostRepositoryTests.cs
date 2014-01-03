@@ -1,24 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using DapperTesting.Core.Data;
-
-using FakeItEasy;
-
+using DapperTesting.Core.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DapperTesting.Core.Tests.Data
 {
-    [TestClass()]
+    [TestClass]
     public class DapperPostRepositoryTests : TestBase
     {
         private DapperPostRepositoryTestContext _c;
 
-        [TestMethod()]
-        public void CreateTest()
+        [TestMethod]
+        public void When_a_new_post_is_created_the_values_are_stored_in_the_database()
         {
-            Assert.Fail();
+            var testUser = _c.CreateTestUser();
+
+            var repository = _c.GetRepository();
+            var post = new Post
+            {
+                OwnerId = testUser.Id,
+                Title = "This is my post title",
+                Slug = "1-this-is-my-post-title"
+            };
+
+            repository.Create(post);
+
+            var createdPost = repository.Get(post.Id);
+
+            Assert.AreEqual(post.Title, createdPost.Title);
+            Assert.AreEqual(post.Slug, createdPost.Slug);
+            Assert.AreEqual(post.OwnerId, post.OwnerId);
         }
 
         [TestInitialize]
@@ -42,15 +55,32 @@ namespace DapperTesting.Core.Tests.Data
 
         private class DapperPostRepositoryTestContext : TestContextBase
         {
-            private const string ConnectionStringName = "UserConnectionString";
+            private const string UserConnectionStringName = "UserConnectionString";
+            private const string PostConnectionStringName = "PostConnectionString";
+
+            private IUserRepository GetUserRepository()
+            {
+                var connectionFactory = CreateConnectionFactory(UserConnectionStringName);
+
+                return new DapperUserRepository(connectionFactory, UserConnectionStringName);
+            }
 
             public IPostRepository GetRepository()
             {
-                var connectionFactory = A.Fake<IConnectionFactory>();
+                var connectionFactory = CreateConnectionFactory(PostConnectionStringName);
 
-                A.CallTo(() => connectionFactory.Create(ConnectionStringName)).ReturnsLazily(f => GetConnection());
+                return new DapperPostRepository(connectionFactory, PostConnectionStringName);
+            }
 
-                return new DapperPostRepository(connectionFactory, ConnectionStringName);
+            public User CreateTestUser()
+            {
+                var repository = GetUserRepository();
+
+                var user = CreateStandardUser(1000);
+
+                repository.Create(user);
+
+                return user;
             }
         }
     }
