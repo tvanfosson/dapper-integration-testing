@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using Dapper;
+
 using DapperTesting.Core.Model;
 
 namespace DapperTesting.Core.Data
@@ -37,7 +41,11 @@ namespace DapperTesting.Core.Data
 
         public Post Get(int id)
         {
-            throw new NotImplementedException();
+            const string sql = "SELECT * FROM [Posts] WHERE [Id] = @postId";
+
+            var post = Fetch(c => c.Query<Post>(sql, new { postId = id })).SingleOrDefault();
+
+            return post;
         }
 
         public PostDetails GetDetails(int postId, int sequence)
