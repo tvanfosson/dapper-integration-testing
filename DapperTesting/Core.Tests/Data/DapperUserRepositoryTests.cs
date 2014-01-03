@@ -370,11 +370,6 @@ namespace DapperTesting.Core.Tests.Data
                 return new DapperUserRepository(connectionFactory, ConnectionStringName);
             }
 
-            public DateTime RoundToSecond(DateTime input)
-            {
-                return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
-            }
-
             public User CreateStandardUser(int id = 0)
             {
                 return new User

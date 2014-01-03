@@ -122,5 +122,10 @@ namespace DapperTesting.Core.Tests
 
             _disposed = true;
         }
+
+        public DateTime RoundToSecond(DateTime input)
+        {
+            return new DateTime(input.Year, input.Month, input.Day, input.Hour, input.Minute, input.Second);
+        }
     }
 }
