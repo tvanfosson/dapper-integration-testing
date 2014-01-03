@@ -42,6 +42,18 @@ namespace DapperTesting.Core.Tests.Data
         }
 
         [TestMethod]
+        public void When_a_new_user_is_created_the_id_is_updated()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var existingId = user.Id;
+
+            repository.Create(user);
+
+            Assert.AreNotEqual(existingId, user.Id);
+        }
+
+        [TestMethod]
         public void When_a_new_user_is_created_the_current_time_is_set_as_the_created_date()
         {
             var repository = _c.GetRepository();
