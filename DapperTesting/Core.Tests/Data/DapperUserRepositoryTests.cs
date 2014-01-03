@@ -259,6 +259,23 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(newEmail, retrievedUser.Email);
         }
 
+        [TestMethod]
+        public void When_the_active_bit_is_updated_the_new_value_has_been_persisted()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+
+            repository.Create(user);
+
+            user.Active = false;
+
+            repository.Update(user);
+
+            var retrievedUser = repository.Get(user.Id);
+
+            Assert.IsFalse(retrievedUser.Active);
+        }
+
         [TestInitialize]
         public void Init()
         {
