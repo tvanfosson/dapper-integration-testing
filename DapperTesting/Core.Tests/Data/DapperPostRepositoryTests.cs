@@ -31,7 +31,29 @@ namespace DapperTesting.Core.Tests.Data
 
             Assert.AreEqual(post.Title, createdPost.Title);
             Assert.AreEqual(post.Slug, createdPost.Slug);
-            Assert.AreEqual(post.OwnerId, post.OwnerId);
+            Assert.AreEqual(post.OwnerId, createdPost.OwnerId);
+            Assert.AreEqual(post.Deleted, createdPost.Deleted);
+        }
+
+        [TestMethod]
+        public void When_a_new_post_is_created_as_deleted_the_deleted_value_is_stored_in_the_database()
+        {
+            var testUser = _c.CreateTestUser();
+
+            var repository = _c.GetRepository();
+            var post = new Post
+            {
+                OwnerId = testUser.Id,
+                Title = "This is my post title",
+                Slug = "1-this-is-my-post-title",
+                Deleted = true
+            };
+
+            repository.Create(post);
+
+            var createdPost = repository.Get(post.Id);
+
+            Assert.AreEqual(post.Deleted, createdPost.Deleted);
         }
 
         [TestMethod]
@@ -56,7 +78,6 @@ namespace DapperTesting.Core.Tests.Data
 
             Assert.IsTrue(before <= posted && posted <= after);
             Assert.IsTrue(before <= edited && edited <= after);
-
         }
 
         [TestInitialize]

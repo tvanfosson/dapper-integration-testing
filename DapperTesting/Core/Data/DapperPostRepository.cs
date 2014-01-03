@@ -17,7 +17,7 @@ namespace DapperTesting.Core.Data
         public void Create(Post post)
         {
             var date = DateTime.Now;
-            const string sql = "INSERT INTO [Posts] ([OwnerId], [Title], [Slug], [PostedDate], [EditedDate], [Deleted]) OUTPUT inserted.[Id] VALUES(@ownerId, @title, @slug, @postedDate, @editedDate, 0)";
+            const string sql = "INSERT INTO [Posts] ([OwnerId], [Title], [Slug], [PostedDate], [EditedDate], [Deleted]) OUTPUT inserted.[Id] VALUES(@ownerId, @title, @slug, @postedDate, @editedDate, @deleted)";
 
             var id = Fetch(c => c.Query<int>(sql, new
             {
@@ -25,7 +25,8 @@ namespace DapperTesting.Core.Data
                 title = post.Title,
                 slug = post.Slug,
                 postedDate = date,
-                editedDate = date
+                editedDate = date,
+                deleted = post.Deleted
             })).Single();
 
             post.Id = id;
