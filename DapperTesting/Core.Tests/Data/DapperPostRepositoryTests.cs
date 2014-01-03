@@ -34,6 +34,31 @@ namespace DapperTesting.Core.Tests.Data
             Assert.AreEqual(post.OwnerId, post.OwnerId);
         }
 
+        [TestMethod]
+        public void When_a_new_post_is_created_the_posted_date_and_edited_dates_are_updated()
+        {
+            var testUser = _c.CreateTestUser();
+
+            var repository = _c.GetRepository();
+            var post = new Post
+            {
+                OwnerId = testUser.Id,
+                Title = "This is my post title",
+                Slug = "1-this-is-my-post-title"
+            };
+
+            var before = _c.RoundToSecond(DateTime.Now);
+            repository.Create(post);
+            var after = _c.RoundToSecond(DateTime.Now);
+
+            var posted = _c.RoundToSecond(post.PostedDate);
+            var edited = _c.RoundToSecond(post.EditedDate);
+
+            Assert.IsTrue(before <= posted && posted <= after);
+            Assert.IsTrue(before <= edited && edited <= after);
+
+        }
+
         [TestInitialize]
         public void Init()
         {
