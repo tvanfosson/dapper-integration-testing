@@ -14,26 +14,55 @@ namespace DapperTesting.Core.Tests.Data
         private DapperUserRepositoryTestContext _c;
 
         [TestMethod]
+        public void When_a_non_existent_user_is_retrieved_by_id_the_value_returned_is_null()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser(0);
+
+            repository.Create(user);
+
+            var retrievedUser = repository.Get(1);
+
+            Assert.IsNull(retrievedUser);
+        }
+
+        [TestMethod]
         public void When_a_new_user_is_retrieved_by_id_it_is_the_correct_user()
         {
             var repository = _c.GetRepository();
-            var user = _c.CreateStandardUser();
+            var user = _c.CreateStandardUser(0);
+            var otherUser = _c.CreateStandardUser(1);
 
             repository.Create(user);
+            repository.Create(otherUser);
 
             var retrievedUser = repository.Get(user.Id);
 
             Assert.AreEqual(user.Id, retrievedUser.Id);
         }
 
+        [TestMethod]
+        public void When_a_non_existent_user_is_retrieved_by_email_the_value_returned_is_null()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser(0);
+
+            repository.Create(user);
+
+            var retrievedUser = repository.Get("username1@example.com");
+
+            Assert.IsNull(retrievedUser);
+        }
 
         [TestMethod]
         public void When_a_new_user_is_retrieved_by_email_it_is_the_correct_user()
         {
             var repository = _c.GetRepository();
-            var user = _c.CreateStandardUser();
+            var user = _c.CreateStandardUser(0);
+            var otherUser = _c.CreateStandardUser(1);
 
             repository.Create(user);
+            repository.Create(otherUser);
 
             var retrievedUser = repository.Get(user.Email);
 
