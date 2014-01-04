@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DapperTesting.Core.Data;
 using DapperTesting.Core.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,12 +20,7 @@ namespace DapperTesting.Core.Tests.Data
             var testUser = _c.CreateTestUser();
 
             var repository = _c.GetRepository();
-            var post = new Post
-            {
-                OwnerId = testUser.Id,
-                Title = "This is my post title",
-                Slug = "1-this-is-my-post-title"
-            };
+            var post = _c.CreatePost(testUser);
 
             repository.Create(post);
 
@@ -41,13 +38,8 @@ namespace DapperTesting.Core.Tests.Data
             var testUser = _c.CreateTestUser();
 
             var repository = _c.GetRepository();
-            var post = new Post
-            {
-                OwnerId = testUser.Id,
-                Title = "This is my post title",
-                Slug = "1-this-is-my-post-title",
-                Deleted = true
-            };
+            var post = _c.CreatePost(testUser);
+            post.Deleted = true;
 
             repository.Create(post);
 
@@ -62,12 +54,7 @@ namespace DapperTesting.Core.Tests.Data
             var testUser = _c.CreateTestUser();
 
             var repository = _c.GetRepository();
-            var post = new Post
-            {
-                OwnerId = testUser.Id,
-                Title = "This is my post title",
-                Slug = "1-this-is-my-post-title"
-            };
+            var post = _c.CreatePost(testUser);
 
             var before = _c.RoundToSecond(DateTime.Now);
             repository.Create(post);
@@ -103,6 +90,7 @@ namespace DapperTesting.Core.Tests.Data
         {
             private const string UserConnectionStringName = "UserConnectionString";
             private const string PostConnectionStringName = "PostConnectionString";
+            private static readonly ConcurrentDictionary<int, ConcurrentDictionary<string, string>> _slugs = new ConcurrentDictionary<int, ConcurrentDictionary<string, string>>();
 
             private IUserRepository GetUserRepository()
             {
@@ -111,11 +99,52 @@ namespace DapperTesting.Core.Tests.Data
                 return new DapperUserRepository(connectionFactory, UserConnectionStringName);
             }
 
+            private string CreateSlug(int id, string title)
+            {
+                var builder = new StringBuilder(title.Length + 4);
+
+                builder.Append(id);
+                builder.Append('-');
+
+                var previousChar = '\0';
+                foreach (var c in title)
+                {
+                    if (char.IsLetterOrDigit(c))
+                    {
+                        builder.Append(c);
+                        previousChar = c;
+                    }
+                    else if (previousChar != '-' && (c == ' ' || c == '-'))
+                    {
+                        builder.Append('-');
+                        previousChar = '-';
+                    }
+                }
+
+                return builder.ToString();
+            }
+
+            private string GetCachedSlug(int id, string title)
+            {
+                var ownerDictionary = _slugs.GetOrAdd(id, i => new ConcurrentDictionary<string, string>());
+                return ownerDictionary.GetOrAdd(title, t => CreateSlug(id, t));
+            }
+
             public IPostRepository GetRepository()
             {
                 var connectionFactory = CreateConnectionFactory(PostConnectionStringName);
 
                 return new DapperPostRepository(connectionFactory, PostConnectionStringName);
+            }
+
+            public Post CreatePost(User owner, string title = "This is my post title")
+            {
+                return new Post
+                {
+                    OwnerId = owner.Id,
+                    Title = title,
+                    Slug = GetCachedSlug(owner.Id, title)
+                };
             }
 
             public User CreateTestUser()
