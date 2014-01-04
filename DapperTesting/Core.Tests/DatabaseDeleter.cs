@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading;
 
 namespace DapperTesting.Core.Tests
 {
     /// <summary>
     /// Based on https://gist.github.com/jbogard/5805783 for nHibernate, adapted to use SqlConnection/SqlCommand.
     /// Queries the database and builds a set of delete commands that takes into account the relations
-    /// between tables to clean all the data out after a test run.
+    /// between tables to clean all the data out after a test run.  The delete string is built once per
+    /// database with the connection string used to distinguish between databases. You must use
+    /// the same connection string if you are accessing the same database regardless of which
+    /// tables your test will be using as the delete command will encompass all tables within
+    /// the database.
     /// </summary>
     internal class DatabaseDeleter
     {
@@ -20,12 +23,20 @@ namespace DapperTesting.Core.Tests
             public string ForeignKeyTable { get; set; }
         }
 
+        private class NotInitializedException : Exception
+        {
+            public NotInitializedException(string database)
+                : base(string.Format("<{0}> has not been initialized", database))
+            {
+            }
+        }
+
         private static readonly object _lockObj = new object();
-        private static readonly string[] _ignoredTables = { "sysdiagrams" };
+        private static readonly string[] _ignoredTables = { "sysdiagrams" /* add migration tables if necessary */ };
         private readonly string _database;
         private IEnumerable<string> _tablesToDelete;
-        private static string _deleteSql;
-        private static bool _initialized;
+        private readonly static Dictionary<string, string> _deleteSql = new Dictionary<string, string>();
+        private readonly static HashSet<string> _initialized = new HashSet<string>();
 
         public DatabaseDeleter(string database)
         {
@@ -35,9 +46,11 @@ namespace DapperTesting.Core.Tests
 
         public void DeleteAllData()
         {
-            if (string.IsNullOrEmpty(_deleteSql))
+            string deleteSql;
+
+            if (!_deleteSql.TryGetValue(_database, out deleteSql))
             {
-                return;
+                throw new NotInitializedException(_database);
             }
 
             using (var connection = new SqlConnection(_database))
@@ -46,7 +59,7 @@ namespace DapperTesting.Core.Tests
 
                 using (IDbCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = _deleteSql;
+                    command.CommandText = deleteSql;
                     command.ExecuteNonQuery();
                 }
             }
@@ -59,14 +72,14 @@ namespace DapperTesting.Core.Tests
 
         private void BuildDeleteTables()
         {
-            if (_initialized)
+            if (_initialized.Contains(_database))
             {
                 return;
             }
 
             lock (_lockObj)
             {
-                if (_initialized)
+                if (!_initialized.Add(_database))
                 {
                     return;
                 }
@@ -81,9 +94,7 @@ namespace DapperTesting.Core.Tests
 
                     _tablesToDelete = BuildTableList(allTables, allRelationships);
 
-                    _deleteSql = BuildTableSql(_tablesToDelete);
-
-                    _initialized = true;
+                    _deleteSql[_database] = BuildTableSql(_tablesToDelete);
                 }
             }
         }
@@ -130,8 +141,8 @@ namespace DapperTesting.Core.Tests
 	                                        inner join sysobjects so_pk on sfk.rkeyid = so_pk.id
 	                                        inner join sysobjects so_fk on sfk.fkeyid = so_fk.id
                                         order by
-                                                so_pk.name
-                                                ,   so_fk.name";
+                                                 so_pk.name
+                                                ,so_fk.name";
 
                 using (var reader = query.ExecuteReader())
                 {
