@@ -53,7 +53,7 @@
     <Compile Include="Data\DapperRepositoryBase.cs" />
     <Compile Include="Data\IConnectionFactory.cs" />
     <Compile Include="Model\Post.cs" />
-    <Compile Include="Model\PostDetails.cs" />
+    <Compile Include="Model\PostDetail.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

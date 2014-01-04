@@ -1,6 +1,6 @@
 ﻿namespace DapperTesting.Core.Model
 {
-    public class PostDetails
+    public class PostDetail
     {
         public int Id { get; set; }
         public int PostId { get; set; }

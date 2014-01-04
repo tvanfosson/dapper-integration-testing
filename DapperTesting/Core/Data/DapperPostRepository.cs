@@ -34,7 +34,7 @@ namespace DapperTesting.Core.Data
             post.EditedDate = date;
         }
 
-        public void AddDetails(int postId, PostDetails details)
+        public void AddDetail(int postId, PostDetail detail)
         {
             throw new NotImplementedException();
         }
@@ -44,7 +44,7 @@ namespace DapperTesting.Core.Data
             throw new NotImplementedException();
         }
 
-        public bool DeleteDetails(int detailsId)
+        public bool DeleteDetail(int detailId)
         {
             throw new NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace DapperTesting.Core.Data
             return post;
         }
 
-        public PostDetails GetDetails(int postId, int sequence)
+        public PostDetail GetDetail(int postId, int sequence)
         {
             throw new NotImplementedException();
         }
@@ -73,7 +73,7 @@ namespace DapperTesting.Core.Data
             throw new NotImplementedException();
         }
 
-        public bool UpdateDetails(PostDetails details)
+        public bool UpdateDetail(PostDetail detail)
         {
             throw new NotImplementedException();
         }

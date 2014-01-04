@@ -6,13 +6,13 @@ namespace DapperTesting.Core.Data
     public interface IPostRepository
     {
         void Create(Post post);
-        void AddDetail(int postId, PostDetail detail);
+        void AddDetails(int postId, PostDetail details);
         bool Delete(int postId);
-        bool DeleteDetail(int detailId);
+        bool DeleteDetails(int detailsId);
         List<Post> GetPostsForUser(int userId);
         Post Get(int id);
-        PostDetail GetDetail(int postId, int sequence);
+        PostDetail GetDetails(int postId, int sequence);
         bool Update(Post post);
-        bool UpdateDetail(PostDetail detail);
+        bool UpdateDetails(PostDetail details);
     }
 }
