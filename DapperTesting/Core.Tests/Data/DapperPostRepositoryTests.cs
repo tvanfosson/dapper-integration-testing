@@ -67,6 +67,31 @@ namespace DapperTesting.Core.Tests.Data
             Assert.IsTrue(before <= edited && edited <= after);
         }
 
+        [TestMethod]
+        public void When_a_new_post_detail_is_created_the_values_are_stored_in_the_database()
+        {
+            var testUser = _c.CreateTestUser();
+
+            var repository = _c.GetRepository();
+            var post = _c.CreatePost(testUser);
+
+            repository.Create(post);
+
+            const int sequenceNumber = 0;
+            var detail = new PostDetail
+            {
+                PostId = post.Id,
+                SequenceNumber = sequenceNumber,
+                Text = "details"
+            };
+
+            repository.AddDetail(detail);
+
+            var createdDetail = repository.GetDetail(post.Id, sequenceNumber);
+
+            Assert.AreEqual(detail.Text, createdDetail.Text);
+        }
+
         [TestInitialize]
         public void Init()
         {

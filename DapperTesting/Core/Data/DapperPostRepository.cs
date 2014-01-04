@@ -10,7 +10,8 @@ namespace DapperTesting.Core.Data
 {
     public class DapperPostRepository : DapperRepositoryBase, IPostRepository
     {
-        public DapperPostRepository(IConnectionFactory connectionFactory, string connectionStringName) : base(connectionFactory, connectionStringName)
+        public DapperPostRepository(IConnectionFactory connectionFactory, string connectionStringName)
+            : base(connectionFactory, connectionStringName)
         {
         }
 
@@ -34,9 +35,18 @@ namespace DapperTesting.Core.Data
             post.EditedDate = date;
         }
 
-        public void AddDetail(int postId, PostDetail detail)
+        public void AddDetail(PostDetail detail)
         {
-            throw new NotImplementedException();
+            const string sql = "INSERT INTO [PostDetails] ([PostId], [SequenceNumber], [Text]) OUTPUT inserted.[Id] VALUES(@postId ,@sequenceNumber, @text)";
+
+            var id = Fetch(c => c.Query<int>(sql, new
+            {
+                postId = detail.PostId,
+                sequenceNumber = detail.SequenceNumber,
+                text = detail.Text
+            })).Single();
+
+            detail.Id = id;
         }
 
         public bool Delete(int postId)
@@ -63,11 +73,11 @@ namespace DapperTesting.Core.Data
             return post;
         }
 
-        public PostDetail GetDetail(int postId, int sequence)
+        public PostDetail GetDetail(int postId, int sequenceNumber)
         {
-            const string sql = "SELECT * FROM [PostDetails] WHERE [PostId] = @postId AND [Sequence] = @sequence";
+            const string sql = "SELECT * FROM [PostDetails] WHERE [PostId] = @postId AND [SequenceNumber] = @sequenceNumber";
 
-            var details = Fetch(c => c.Query<PostDetail>(sql, new { postId, sequence })).SingleOrDefault();
+            var details = Fetch(c => c.Query<PostDetail>(sql, new { postId, sequenceNumber })).SingleOrDefault();
 
             return details;
         }
