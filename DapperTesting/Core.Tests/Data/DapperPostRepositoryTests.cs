@@ -77,17 +77,11 @@ namespace DapperTesting.Core.Tests.Data
 
             repository.Create(post);
 
-            const int sequenceNumber = 0;
-            var detail = new PostDetail
-            {
-                PostId = post.Id,
-                SequenceNumber = sequenceNumber,
-                Text = "details"
-            };
+            var detail = _c.CreateDetail(post);
 
             repository.AddDetail(detail);
 
-            var createdDetail = repository.GetDetail(post.Id, sequenceNumber);
+            var createdDetail = repository.GetDetail(post.Id, detail.SequenceNumber);
 
             Assert.AreEqual(detail.Text, createdDetail.Text);
         }
@@ -171,6 +165,24 @@ namespace DapperTesting.Core.Tests.Data
                     Slug = GetCachedSlug(owner.Id, title)
                 };
             }
+
+            public PostDetail CreateDetail(Post post)
+            {
+                return CreateDetails(post).First();
+            }
+
+            public IEnumerable<PostDetail> CreateDetails(Post post, int count = 1)
+            {
+                for (var i = 0; i < count; ++i)
+                {
+                    yield return new PostDetail
+                    {
+                        PostId = post.Id,
+                        SequenceNumber = i,
+                        Text = "detail " + i
+                    };
+                }
+            } 
 
             public User CreateTestUser()
             {
