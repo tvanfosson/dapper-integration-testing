@@ -65,7 +65,11 @@ namespace DapperTesting.Core.Data
 
         public PostDetail GetDetail(int postId, int sequence)
         {
-            throw new NotImplementedException();
+            const string sql = "SELECT * FROM [PostDetails] WHERE [PostId] = @postId AND [Sequence] = @sequence";
+
+            var details = Fetch(c => c.Query<PostDetail>(sql, new { postId, sequence })).SingleOrDefault();
+
+            return details;
         }
 
         public bool Update(Post post)
