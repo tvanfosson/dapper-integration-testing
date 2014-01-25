@@ -110,14 +110,19 @@ namespace DapperTesting.Core.Tests
 
             while (allTables.Any())
             {
-                var leafTables = allTables.Except(allRelationships.Select(rel => rel.PrimaryKeyTable)).ToArray();
+                var leafTables = allTables.Except(allRelationships
+                                          .Select(rel => rel.PrimaryKeyTable))
+                                          .ToArray();
 
                 tablesToDelete.AddRange(leafTables);
 
                 foreach (var leafTable in leafTables)
                 {
                     allTables.Remove(leafTable);
-                    var relToRemove = allRelationships.Where(rel => rel.ForeignKeyTable == leafTable).ToArray();
+
+                    var relToRemove = allRelationships.Where(rel => rel.ForeignKeyTable == leafTable)
+                                                      .ToArray();
+
                     foreach (var rel in relToRemove)
                     {
                         allRelationships.Remove(rel);
