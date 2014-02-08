@@ -26,7 +26,7 @@ CREATE TABLE [dbo].[Posts](
 	[Id] [int] IDENTITY(1000,1) NOT NULL,
 	[OwnerId] [int] NOT NULL,
 	[Title] [nvarchar](200) NOT NULL,
-	[Slug] [varchar](50) NOT NULL,
+	[Slug] [nvarchar](50) NOT NULL,
 	[PostedDate] [datetime] NOT NULL,
 	[EditedDate] [datetime] NOT NULL,
 	[Deleted] [bit] NOT NULL,
