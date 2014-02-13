@@ -114,6 +114,31 @@ namespace DapperTesting.Core.Tests.Data
         }
 
         [TestMethod]
+        public void When_an_exception_is_thrown_the_id_and_date_are_not_updated()
+        {
+            var repository = _c.GetRepository();
+            var user = _c.CreateStandardUser();
+            var otherUser = _c.CreateStandardUser(1);
+            otherUser.DisplayName = user.DisplayName;
+
+            repository.Create(user);
+
+            var expectedId = otherUser.Id = -1;
+            var expectedDate = otherUser.CreatedDate = DateTime.MinValue;
+
+            try
+            {
+                repository.Create(otherUser);
+                Assert.Fail("Expected SqlException not thrown.");
+            }
+            catch (SqlException)
+            {
+                Assert.AreEqual(expectedId, otherUser.Id);
+                Assert.AreEqual(expectedDate, otherUser.CreatedDate);
+            }
+        }
+
+        [TestMethod]
         public void When_a_new_user_is_created_the_id_is_updated()
         {
             var repository = _c.GetRepository();
