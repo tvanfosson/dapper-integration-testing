@@ -50,6 +50,20 @@ namespace DapperTesting.Core.Data
             return user;
         }
 
+        public User Get2(int id)
+        {
+            const string sql = "SELECT * FROM [Users] WHERE [Id] = @userId";
+
+            using (var connection = _connectionFactory.Create(_connectionStringName))
+            {
+                connection.Open();
+
+                var user = connection.Query<User>(sql, new { userId = id }).SingleOrDefault();
+
+                return user;
+            }
+        }
+
         public User Get(string email)
         {
             const string sql = "SELECT * FROM [Users] WHERE [Email] = @email";
